@@ -17,7 +17,7 @@ export enum Action {
 export const StartAction = [Action.PickFromCentralStack, Action.PickFromCentralStack,];
 export const EndAction = [Action.Dump];
 
-export type PickActionData = {};
+export type PickActionData = Record<never, never>;
 export type DumpActionData = { card?: Card; };
 export type PickFromDiposedStackAndRevealData = {
     /** 手中持有的牌,不包括弃牌上的牌 */
@@ -117,11 +117,11 @@ type PickDiposedAndRevealActionData = { action: Action.PickFromDiposedStackAndRe
 export function calcDisposedPickAction(cards: Card[], disposedCard: Card): { action: Action.PickFromDiposedStackAndReveal, data: PickFromDiposedStackAndRevealData; } | null {
     // TODO: 列出全部
     const avaliableChoose: Array<PickDiposedAndRevealActionData> = [];
-    let pairChoose = getPairsWith(cards, disposedCard);
+    const pairChoose = getPairsWith(cards, disposedCard);
     if (pairChoose != null) {
         avaliableChoose.push(pairChoose);
     }
-    let straightFlushChoose = getStraightFlushWith(cards, disposedCard);
+    const straightFlushChoose = getStraightFlushWith(cards, disposedCard);
     if (straightFlushChoose != null) {
         avaliableChoose.push(straightFlushChoose);
     }

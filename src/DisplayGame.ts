@@ -1,6 +1,6 @@
-import { Card, displayCard, displayCardByGroup, displayCards } from "./Card";
-import { RevealGroup } from "./RevealGroup";
+import { Card, displayCard, displayCardByGroup } from "./Card";
 import { Game } from "./Game";
+import { RevealGroup } from "./RevealGroup";
 
 /**
  * x                                          x
@@ -25,7 +25,7 @@ export function makeRevealRow(leftReveals: RevealGroup[], rightReveals: RevealGr
     const lines: string[] = [];
     const reveal: [string, string][] = [];
     for (let i = 0; i < Math.max(leftReveals.length, rightReveals.length); i++) {
-        let line: [string, string] = ["", ""];
+        const line: [string, string] = ["", ""];
         if (i < leftReveals.length) {
             line[0] = `${i + 1}: ${leftReveals[i].cards.map((c) => displayCard(c)[0]).join(' ')}`;
         }

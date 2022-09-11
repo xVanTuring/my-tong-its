@@ -29,7 +29,7 @@ export function calcOptimalMeldGroup(partA: Meld[], partB: Meld[]) {
     }
     const graph = buildGraph(partAColl, partBColl, meldMap, collisionArray);
     const bestChoice = solveGraph(graph, idToMeld);
-    const [meldIds, points] = bestChoice;
+    const [meldIds,] = bestChoice;
     if (meldIds == null) {
         throw new Error(`Cannot find solution`);
         // console.error(`Cannot find solution`)
@@ -85,7 +85,7 @@ function solveGraph(graph: Graph, idToMeld: Map<number, Meld>) {
 }
 
 function buildGraph(partA: Meld[], partB: Meld[], meldMap: Map<Meld, number>, collisionArray: string[]) {
-    let graph = new Graph();
+    const graph = new Graph();
     buildSameMeldLink(partA, graph, meldMap);
     buildSameMeldLink(partB, graph, meldMap);
     for (let i = 0; i < partA.length; i++) {

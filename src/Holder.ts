@@ -1,8 +1,6 @@
+import { v4 as uuidv4 } from 'uuid';
 import { Card } from "./Card";
 import { RevealGroup } from "./RevealGroup";
-import { v4 as uuidv4 } from 'uuid';
-import { create as createRandom } from "random-seed";
-const rand = createRandom("23");
 /** 持牌人 */
 export interface Holder {
     cards: Card[];

@@ -148,7 +148,7 @@ export function getMeldListPoint(meld: Meld[]) {
 export function getStraightFlushOneColor(_cards: Card[], minLength = 3): Meld[] {
     const cards = [..._cards].sort((a, b) => a.value - b.value);
     let lastCard: Card | null = null;
-    let straightGroups: Card[][] = [];
+    const straightGroups: Card[][] = [];
     while (cards.length > 0) {
         const card = cards.shift();
         if (card == null) {
@@ -189,7 +189,7 @@ export function getPairs(_cards: Card[], minLength = 3): Meld[] {
         group.push(card);
     });
     const pairList: Card[][] = [];
-    for (let [k, v] of dict.entries()) {
+    for (const [k, v] of dict.entries()) {
         if (v.length >= minLength) {
             pairList.push(v);
         }

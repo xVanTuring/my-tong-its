@@ -67,7 +67,7 @@ describe("Card sort", () => {
 
 describe("StraightFlush", () => {
     it("Straight Detection 1 Straight With minLength 3", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.diamond,
                 value: 3
@@ -93,7 +93,7 @@ describe("StraightFlush", () => {
         expect(result.length).toBe(1);
     });
     it("Straight Detection 1 Straight With minLength 4", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.diamond,
                 value: 3
@@ -119,7 +119,7 @@ describe("StraightFlush", () => {
         expect(result.length).toBe(0);
     });
     it("StraightFlush miss one card", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.diamond,
                 value: 3
@@ -145,7 +145,7 @@ describe("StraightFlush", () => {
         expect(result.length).toBe(0);
     });
     it("StraightFlush multiple ", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.spade,
                 value: 3
@@ -182,7 +182,7 @@ describe("StraightFlush", () => {
 describe("Pairs", () => {
 
     it("Pair Detection 3 cards", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.diamond,
                 value: 3
@@ -201,7 +201,7 @@ describe("Pairs", () => {
         expect(result.length).toBe(1);
     });
     it("Pair Detection 4 cards", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.diamond,
                 value: 3
@@ -228,7 +228,7 @@ describe("Pairs", () => {
         expect(result.length).toBe(1);
     });
     it("Pair Detection 4 cards no pairs", () => {
-        let cards: Card[] = [
+        const cards: Card[] = [
             {
                 color: CardColor.diamond,
                 value: 3
@@ -253,7 +253,7 @@ describe("Pairs", () => {
 });
 
 describe("StraightFlush and Pairs", () => {
-    let cards: Card[] = [
+    const cards: Card[] = [
         {
             color: CardColor.club,
             value: 7

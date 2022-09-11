@@ -44,7 +44,6 @@ async function UILoop(game: Game) {
     UILoop(game);
 }
 start();
-const steps: string[] = [];
 
 async function askForAction(game: Game) {
     const response = await prompts({

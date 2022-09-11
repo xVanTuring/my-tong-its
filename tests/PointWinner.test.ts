@@ -1,4 +1,3 @@
-import { calcDisposedPickAction } from "../src/Actions";
 import { CardColor } from "../src/Card";
 import { displayGame } from "../src/DisplayGame";
 import { calcPointWinner, Game } from "../src/Game";
@@ -10,7 +9,7 @@ describe("Point Winner test", () => {
         const dealer = makeHolder();
         const player1 = makeHolder();
         const player2 = makeHolder();
-        let game: Game = {
+        const game: Game = {
             centralStack: [],
             holders: [dealer, player1, player2],
             diposedStack: [],

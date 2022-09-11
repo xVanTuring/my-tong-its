@@ -1,4 +1,3 @@
-
 import { create as createRandom } from "random-seed";
 import { Card, getCardPoint, getPairs, getStraightFlush, makeDeckofCard } from "./Card";
 import { Holder } from "./Holder";

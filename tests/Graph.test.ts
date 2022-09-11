@@ -4,8 +4,8 @@ import { calcOptimalMeldGroup } from "../src/graph/MeldGraph";
 
 describe("Graph", () => {
     it("Collided Melds simple scenario: two group collided", () => {
-        let partA = [[1, 2, 3]];
-        let partB = [[2, 2, 2]];
+        const partA = [[1, 2, 3]];
+        const partB = [[2, 2, 2]];
         const result = getCollidedMelds(partA, partB);
         expect(result).toStrictEqual([
             [[1, 2, 3], [2, 2, 2]] // couple of collapsed
@@ -13,8 +13,8 @@ describe("Graph", () => {
         expect(result.length).toBe(1);
     });
     it("Collided Melds simple scenario: three group collided", () => {
-        let partA = [[1, 2, 3]];
-        let partB = [[2, 2, 2], [3, 3, 3]];
+        const partA = [[1, 2, 3]];
+        const partB = [[2, 2, 2], [3, 3, 3]];
         const result = getCollidedMelds(partA, partB);
         expect(result).toStrictEqual([
             [[1, 2, 3], [2, 2, 2]],// couple of collapsed
@@ -24,7 +24,7 @@ describe("Graph", () => {
     });
 
     it("Card Collided simple scenario", () => {
-        let partA: Card[][] = [[
+        const partA: Card[][] = [[
             {
                 color: CardColor.club,
                 value: 7
@@ -51,7 +51,7 @@ describe("Graph", () => {
                 value: 8
             }
         ]];
-        let partB = [[
+        const partB = [[
             {
                 color: CardColor.club,
                 value: 7
@@ -85,7 +85,7 @@ describe("Graph", () => {
         expect(result.length).toBe(4);
     });
     it("Card Collided complex scenario", () => {
-        let partA: Card[][] = [
+        const partA: Card[][] = [
             [
                 {
                     color: CardColor.club,
@@ -139,7 +139,7 @@ describe("Graph", () => {
                     value: 2
                 }
             ]];
-        let partB = [[
+        const partB = [[
             {
                 color: CardColor.club,
                 value: 7
@@ -189,7 +189,7 @@ describe("Graph", () => {
 });
 describe("Card Graph", () => {
     it("Test1- three pairs collided with 3 straightFlush but with same value each", () => {
-        let partA: Card[][] = [
+        const partA: Card[][] = [
             [
                 {
                     color: CardColor.club,
@@ -230,7 +230,7 @@ describe("Card Graph", () => {
                     value: 9
                 }
             ]];
-        let partB: Card[][] = [[
+        const partB: Card[][] = [[
             {
                 color: CardColor.club,
                 value: 7
@@ -274,8 +274,8 @@ describe("Card Graph", () => {
         expect(getMeldListPoint(bestChoice)).toBe((7 + 8 + 9) * 3);
     });
     it("Test2 Zero Collided", () => {
-        let partA: Card[][] = [];
-        let partB: Card[][] = [[
+        const partA: Card[][] = [];
+        const partB: Card[][] = [[
             {
                 color: CardColor.club,
                 value: 7
@@ -306,7 +306,7 @@ describe("Card Graph", () => {
         expect(getMeldListPoint(bestChoice)).toBe((7 + 8 + 9) * 2);
     });
     it("Test3 1 collided with 2", () => {
-        let partA: Meld[] = [
+        const partA: Meld[] = [
             [
                 {
                     color: CardColor.club,
@@ -321,7 +321,7 @@ describe("Card Graph", () => {
                     value: 7
                 }
             ]];
-        let partB: Meld[] = [[
+        const partB: Meld[] = [[
             {
                 color: CardColor.club,
                 value: 7
@@ -353,7 +353,7 @@ describe("Card Graph", () => {
         expect(points).toBe((7 + 8 + 9) * 2);
     });
     it("Test3 no collision", () => {
-        let partA: Meld[] = [
+        const partA: Meld[] = [
             [
                 {
                     color: CardColor.club,
@@ -368,7 +368,7 @@ describe("Card Graph", () => {
                     value: 11
                 }
             ]];
-        let partB: Meld[] = [[
+        const partB: Meld[] = [[
             {
                 color: CardColor.club,
                 value: 7

@@ -16,7 +16,7 @@ export class Graph {
         this.neighbors.get(v)?.add(u);              // these four lines.
     }
     public showGraph() {
-        let lines: string[] = [];
+        const lines: string[] = [];
         for (const key of this.neighbors.keys()) {
             lines.push(`${key}-> ${Array.from(this.neighbors.get(key)!).join(" ")}`);
         }
@@ -25,8 +25,8 @@ export class Graph {
 }
 
 function findCircleStartWith(graph: Graph, length: number, path: number[]) {
-    let l = path.length;
-    let last = path.at(-1)!;
+    const l = path.length;
+    const last = path.at(-1)!;
 
     let arr: Array<number[]> = [];
     const lastNeighbers = graph.neighbors.get(last)!;

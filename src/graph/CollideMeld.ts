@@ -1,5 +1,5 @@
 export function getCollidedMelds<T>(partA: T[][], partB: T[][], compare?: (a: T, b: T) => boolean) {
-    let collided: Array<[T[], T[]]> = [];
+    const collided: Array<[T[], T[]]> = [];
     for (let i = 0; i < partA.length; i++) {
         const groupA: T[] = partA[i];
         for (let j = 0; j < partB.length; j++) {
