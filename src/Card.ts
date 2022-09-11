@@ -1,3 +1,5 @@
+import { calcOptimalMeldGroup } from "./graph/MeldGraph";
+
 // 梅花| 黑桃 | 红心| 方块
 export enum CardColor {
     spade = 's',
@@ -73,6 +75,37 @@ export function displayCards(card: Card[]): string[] {
     return [makeLine(line1), makeLine(line2), makeLine(lineInd)];
 }
 
+export function displayCardByGroup(cards: Card[]): string[] {
+    const line1: string[] = [];
+    const line2: string[] = [];
+    const lineInd: string[] = [];
+    const pairs = getPairs(cards);
+    const sfList = getStraightFlush(cards);
+
+    const meldList = calcOptimalMeldGroup(pairs, sfList);
+    const meldCards = new Set(meldList.flat());
+
+    const leftCards = cards.filter((card) => !meldCards.has(card));
+    const displayOneCard = (card: Card): void => {
+        const [value, color] = displayCard(card);
+        line1.push(value);
+        line2.push(color);
+        const idx = cards.indexOf(card);
+        lineInd.push(numMapToLocation(idx + 1));
+    };
+    meldList.forEach((meld) => {
+        meld.forEach(displayOneCard);
+        line1.push("  ");
+        line2.push("  ");
+        lineInd.push("  ");
+    });
+    leftCards.forEach(displayOneCard);
+    function makeLine(line: string[]) {
+        return `|${line.join('|')}|`;
+    }
+    return [makeLine(line1), makeLine(line2), makeLine(lineInd)];
+}
+
 export function isPairs(cards: Card[]): boolean {
     return cards.every((c) => c.value === cards[0].value);
 }
@@ -112,7 +145,7 @@ export function getMeldListPoint(meld: Meld[]) {
         return pre + getMeldPoint(cur);
     }, 0);
 }
-export function getStraightFlushOneColor(_cards: Card[], minLength = 3) {
+export function getStraightFlushOneColor(_cards: Card[], minLength = 3): Meld[] {
     const cards = [..._cards].sort((a, b) => a.value - b.value);
     let lastCard: Card | null = null;
     let straightGroups: Card[][] = [];
@@ -138,7 +171,7 @@ export function getStraightFlushOneColor(_cards: Card[], minLength = 3) {
     return qualified;
 }
 ;
-export function getStraightFlush(cards: Card[], minLength = 3) {
+export function getStraightFlush(cards: Card[], minLength = 3): Meld[] {
     return CardColorArray.map((color) => {
         return getStraightFlushOneColor(cards.filter((c) => c.color === color), minLength);
     }).flat();

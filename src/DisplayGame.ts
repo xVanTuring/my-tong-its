@@ -1,4 +1,4 @@
-import { Card, displayCard, displayCards } from "./Card";
+import { Card, displayCard, displayCardByGroup, displayCards } from "./Card";
 import { RevealGroup } from "./RevealGroup";
 import { Game } from "./Game";
 
@@ -95,7 +95,7 @@ export function displayGame(game: Game, as: string): string {
     makeRevealOneColumn(me.reveals).forEach((line) => {
         lines.push(line);
     });
-    displayCards(me.cards).forEach(line => {
+    displayCardByGroup(me.cards).forEach(line => {
         const space = (LINE_WIDTH - line.length) / 2;
         lines.push(line.padStart(space + line.length, " "));
     });
