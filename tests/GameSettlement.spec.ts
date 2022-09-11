@@ -1,5 +1,5 @@
 import { CardColor, makeCard } from "../src/Card";
-import { calcPointWinner, Game } from "../src/Game";
+import { calcPointWinner, FightChoice, Game, startAutoFinalFight } from "../src/Game";
 import { makeHolder } from "../src/Holder";
 import { RevealType } from "../src/RevealGroup";
 
@@ -15,7 +15,10 @@ describe("Game Settlement", () => {
             turnInfo: {
                 fighting: false,
                 picked: false,
-                turn: 10
+                turn: 10,
+                fightChoice: [FightChoice.Unchosen, FightChoice.Unchosen, FightChoice.Unchosen],
+                winner: null,
+                dropped: false,
             }
         };
         dealer.cards = [
@@ -51,12 +54,12 @@ describe("Game Settlement", () => {
             makeCard(11, CardColor.heart),
             makeCard(12, CardColor.club),
         ];
-
-        const winner = calcPointWinner(game);
-        expect(winner).toBe(player1.id);
+        startAutoFinalFight(game);
+        expect(game.turnInfo.fightChoice[2]).toBe(FightChoice.Burnt);
+        expect(game.turnInfo.winner).toBe(player1.id);
 
     });
-    it("Point Winner: one player with no reveals", () => {
+    it("Point Winner: one player with no reveals but a secret also large point", () => {
         const dealer = makeHolder();
         const player1 = makeHolder();
         const player2 = makeHolder();
@@ -67,7 +70,10 @@ describe("Game Settlement", () => {
             turnInfo: {
                 fighting: false,
                 picked: false,
-                turn: 10
+                turn: 10,
+                fightChoice: [FightChoice.Unchosen, FightChoice.Unchosen, FightChoice.Unchosen],
+                winner: null,
+                dropped: false
             }
         };
         dealer.cards = [
@@ -106,10 +112,11 @@ describe("Game Settlement", () => {
             makeCard(13, CardColor.spade),
         ];
 
-        const winner = calcPointWinner(game);
-        expect(winner).toBe(player1.id);
+        startAutoFinalFight(game);
+        expect(game.turnInfo.fightChoice[2]).toBe(FightChoice.Unchosen);
+        expect(game.turnInfo.winner).toBe(player1.id);
     });
-    it("Point Winner: one player with secret meld but with large point", () => {
+    it("Point Winner: one player with secret meld but with small point", () => {
         const dealer = makeHolder();
         const player1 = makeHolder();
         const player2 = makeHolder();
@@ -120,7 +127,10 @@ describe("Game Settlement", () => {
             turnInfo: {
                 fighting: false,
                 picked: false,
-                turn: 10
+                turn: 10,
+                fightChoice: [FightChoice.Unchosen, FightChoice.Unchosen, FightChoice.Unchosen],
+                winner: null,
+                dropped: false
             }
         };
         dealer.cards = [
@@ -158,8 +168,9 @@ describe("Game Settlement", () => {
             makeCard(12, CardColor.spade),
             makeCard(13, CardColor.spade),
         ];
+        startAutoFinalFight(game);
+        expect(game.turnInfo.fightChoice[2]).toBe(FightChoice.Unchosen);
 
-        const winner = calcPointWinner(game);
-        expect(winner).toBe(player2.id);
+        expect(game.turnInfo.winner).toBe(player2.id);
     });
 });

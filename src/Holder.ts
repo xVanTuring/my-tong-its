@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Card } from "./Card";
 import { RevealGroup } from "./RevealGroup";
+import { create as createRandom } from "random-seed";
+const rand = createRandom("177");
 /** 持牌人 */
 export interface Holder {
     cards: Card[];
@@ -24,7 +26,7 @@ export function makeHolder(): Holder {
     const id = uuidv4();
     return {
         cards: [],
-        name: nameList[Math.floor(Math.random() * nameList.length)],
+        name: nameList[Math.floor(rand.random() * nameList.length)],
         reveals: [],
         id
     };

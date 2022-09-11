@@ -1,6 +1,15 @@
 import { create as createRandom } from "random-seed";
-import { Card, getCardPoint, getPairs, getStraightFlush, makeDeckofCard } from "./Card";
+import { Card, getCardPoint, getMeldPoint, getPairs, getStraightFlush, hasSecretMeld, makeDeckofCard } from "./Card";
+import { calcOptimalMeldGroup } from "./graph/MeldGraph";
 import { Holder } from "./Holder";
+import { log2File } from "./LogFile";
+export enum FightChoice {
+    Fight,
+    Fold,
+    Challenge,
+    Burnt,
+    Unchosen,
+}
 /** 一场对局 */
 export interface Game {
     holders: Holder[];
@@ -9,7 +18,11 @@ export interface Game {
     turnInfo: {
         turn: number;
         picked: boolean;
+        /** revealed */
+        dropped: boolean;
         fighting: boolean;
+        fightChoice: [FightChoice, FightChoice, FightChoice];
+        winner: string | null;
     };
 }
 const rand = createRandom("11");
@@ -47,8 +60,11 @@ export function startOneGame(holders: [dealer: Holder, player: Holder, player: H
         diposedStack: [],
         turnInfo: {
             turn: 0,
-            picked: true,
+            picked: true, // 开局第一个人只能pick
+            dropped: false,
             fighting: false,
+            fightChoice: [FightChoice.Unchosen, FightChoice.Unchosen, FightChoice.Unchosen],
+            winner: null,
         }
     };
     return game;
@@ -69,46 +85,75 @@ export function startAutoFinalFight(game: Game) {
     if (game.centralStack.length > 0) {
         throw new Error("Still have central cards, can't start auto final fight");
     }
+    game.holders.forEach((holder, idx) => {
+        if (holder.reveals.length === 0 && !hasSecretMeld(holder.cards)) {
+            game.turnInfo.fightChoice[idx] = FightChoice.Burnt;
+        }
+    });
     const winner = calcPointWinner(game);
-    return winner;
+    game.turnInfo.winner = winner;
 }
 
 export function calcPointWinner(game: Game) {
-    const holderPoint: { id: string; point: number; }[] = [];
-    game.holders.forEach((holder) => {
-        if (holder.reveals.length === 0) {
-            const secretPairs = getPairs(holder.cards, 4);
-            const secretSFList = getStraightFlush(holder.cards, 4);
-            if (secretPairs.length === 0 && secretSFList.length === 0) {
-                holderPoint.push({
-                    id: holder.id,
-                    point: Infinity
-                });
-            } else {
-                const secretCards = new Set([...secretPairs.flat(), ...secretSFList.flat()]);
-                const point = holder.cards.filter((card) => !secretCards.has(card)).reduce((acc, card) => { return acc + getCardPoint(card); }, 0);
-                holderPoint.push({
-                    id: holder.id,
-                    point
-                });
-            }
-            return;
-        }
-        const point = holder.cards.reduce((acc, card) => { return acc + getCardPoint(card); }, 0);
-        holderPoint.push({
+    const holderPoint: Array<{ id: string; point: number; uncounted: boolean; }> = game.holders.map((holder, idx) => {
+        const info = {
             id: holder.id,
-            point: point
-        });
-    });
+            point: Infinity,
+            uncounted: false
+        };
+        info.point = calcPoint(holder);
 
-    const minScore = Math.min(...holderPoint.map((d) => d.point));
+        if (game.turnInfo.fightChoice[idx] === FightChoice.Fold || game.turnInfo.fightChoice[idx] === FightChoice.Burnt) {
+            info.uncounted = true;
+        }
+        return info;
+    });
+    for (const info of holderPoint) {
+        const { id, point } = info;
+        const holder = game.holders.find(holder => holder.id === id);
+        if (holder == null) {
+            throw new Error(`No holder found for ${id}`);
+        }
+        log2File(`User: ${id} of Name ${holder.name} got points: ${point} with FightChoice ${game.turnInfo.fightChoice[game.holders.indexOf(holder)]}`);
+    }
+
+    const minScore = Math.min(...holderPoint.filter((p) => !p.uncounted)
+        .map((d) => d.point));
     let iter = 1;
-    while (true) {
+    while (iter < 5) {
         const lastIndex = (game.turnInfo.turn - iter) % game.holders.length;
         if (holderPoint[lastIndex].point === minScore) {
             return holderPoint[lastIndex].id;
         }
         iter++;
     }
-
+    throw new Error("No winner is found");
 }
+export function calcPoint(holder: Holder) {
+    if (holder.reveals.length === 0) {
+        const secretPairs = getPairs(holder.cards, 4);
+        const secretSFList = getStraightFlush(holder.cards, 4);
+        if (secretPairs.length === 0 && secretSFList.length === 0) {
+            return getMeldPoint(holder.cards);
+        } else {
+            const secretMeldGroup = new Set(calcOptimalMeldGroup(secretPairs, secretSFList).flat());
+            const restCards = holder.cards.filter((card) => !secretMeldGroup.has(card));
+            const restPairs = getPairs(restCards);
+            const restSFList = getStraightFlush(restCards);
+            const optimalRestGroup = new Set(calcOptimalMeldGroup(restPairs, restSFList).flat());
+            return getMeldPoint(holder.cards.filter((card) => !secretMeldGroup.has(card) && !optimalRestGroup.has(card)));
+        }
+    } else {
+        const pairs = getPairs(holder.cards);
+        const sfList = getStraightFlush(holder.cards);
+        const meldCards = new Set(calcOptimalMeldGroup(pairs, sfList).flat());
+        const point = holder.cards.filter(card => !meldCards.has(card)).reduce((acc, card) => { return acc + getCardPoint(card); }, 0);
+        return point;
+    }
+}
+
+export function calcFightWinner(game: Game) {
+    const winner = calcPointWinner(game);
+    game.turnInfo.winner = winner;
+}
+

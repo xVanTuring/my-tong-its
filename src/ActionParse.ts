@@ -22,6 +22,12 @@ export function parseAction(actionEncoded: string, game: Game) {
             return parseSapaw(actionDescription, game);
         case Action.Dump:
             return parseDump(actionDescription, game);
+        case Action.Fight:
+            return parseFight(actionDescription, game);
+        case Action.Fold:
+            return parseFold(actionDescription, game);
+        case Action.Challenge:
+            return parseChallenge(actionDescription, game);
         default:
             throw new Error(`Unknown action ${action}`);
     }
@@ -34,19 +40,13 @@ function getActionByShortName(name: string): Action | undefined {
         "rv": Action.RevealGroup,
         "du": Action.Dump,
         "sa": Action.Sapaw,
+        "ft": Action.Fight,
+        "fd": Action.Fold,
+        "ch": Action.Challenge,
     };
     return actionShortNameDict[name];
 }
-function getActionShortName(action: Action) {
-    const actionShortNameDict: Record<Action, string> = {
-        PickFromCentralStack: "ps",
-        PickFromDiposedStackAndReveal: "pd",
-        RevealGroup: "rv",
-        Dump: "du",
-        Sapaw: "sa"
-    };
-    return actionShortNameDict[action];
-}
+
 /** pc  */
 function parsePickFromCentralStack(actionDescription: string[], game: Game): ActionWithData | null {
     return {
@@ -57,11 +57,14 @@ function parsePickFromCentralStack(actionDescription: string[], game: Game): Act
 /** dp 1 2 3 4 */
 function parsePickFromDiposedStackAndReveal(actionDescription: string[], game: Game): ActionWithData | null {
     const groupIdx = actionDescription.slice(1).map((n) => Number(n) - 1);
-    const valid = groupIdx.every((n => Number.isInteger(n)));
-    if (valid == null) {
+    const me = getMe(game);
+    const valid = groupIdx.every((n => {
+        return Number.isInteger(n) && n < me.cards.length && n >= 0;
+    }));
+    if (!valid) {
         return null;
     }
-    const me = getMe(game);
+
     const disposedCard = game.diposedStack.at(-1);
     if (disposedCard == null) {
         return null;
@@ -153,7 +156,7 @@ function parseSapaw(actionDescription: string[], game: Game): ActionWithData | n
 
     const me = getMe(game);
     const idxs = actionDescription.slice(3).map((c) => Number(c) - 1);
-    if (!idxs.every((i) => Number.isInteger)) {
+    if (!idxs.every(Number.isInteger)) {
         return null;
     }
     const selfCards = idxs.map((i) => me.cards[i]);
@@ -184,5 +187,42 @@ function parseSapaw(actionDescription: string[], game: Game): ActionWithData | n
             groupIdx: revealGroupIdx,
             cards: selfCards
         }
+    };
+}
+
+function parseFight(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.fighting || game.turnInfo.dropped || game.turnInfo.picked) {
+        return null;
+    }
+    const me = getMe(game);
+    if (me.reveals.length === 0) {
+        return null;
+    }
+
+    if (game.turnInfo.turn < game.holders.length) {
+        return null;
+    }
+
+    return {
+        action: Action.Fight,
+        data: {}
+    };
+}
+function parseFold(actionDescription: string[], game: Game): ActionWithData | null {
+    if (!game.turnInfo.fighting) {
+        return null;
+    }
+    return {
+        action: Action.Fold,
+        data: {}
+    };
+}
+function parseChallenge(actionDescription: string[], game: Game): ActionWithData | null {
+    if (!game.turnInfo.fighting) {
+        return null;
+    }
+    return {
+        action: Action.Challenge,
+        data: {}
     };
 }

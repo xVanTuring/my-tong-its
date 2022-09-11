@@ -1,4 +1,4 @@
-import { createWriteStream } from "fs";
+import { createWriteStream, existsSync, readFileSync } from "fs";
 import prompts from "prompts";
 import { parseAction } from "./ActionParse";
 import { makeAction } from "./Actions";
@@ -6,7 +6,16 @@ import { sortCards } from "./Card";
 import { displayGame } from "./DisplayGame";
 import { Game, getMe, startOneGame } from "./Game";
 import { makeHolder } from "./Holder";
-const replay: string[] = [];
+const replay: string[] = [
+];
+function loadReplay() {
+    if (existsSync("./replay.txt")) {
+        readFileSync("./replay.txt").toString().split("\n")
+            .forEach((line) => {
+                replay.push(line.trim());
+            });
+    }
+}
 
 const log = createWriteStream("log_steps.txt", { flags: 'a' });
 function displayGameInConsoleInCurrentTurn(game: Game) {
@@ -16,6 +25,7 @@ function displayGameInConsoleInCurrentTurn(game: Game) {
     console.log(displayGame(game, me.id));
 }
 function start() {
+    loadReplay();
     log.write("\n");
     log.write("\n");
     log.write(`Start: ${new Date()}: \n`);
@@ -33,14 +43,20 @@ async function UILoop(game: Game) {
     if (action_str == null) {
         action = await askForAction(game);
     } else {
+        log.write(action_str + "\n");
         action = parseAction(action_str, game);
     }
     if (action == null) {
         UILoop(game);
         return;
     }
-    const me = getMe(game);
-    makeAction(game, action, me.id);
+    makeAction(game, action);
+    if (game.turnInfo.winner !== null) {
+        console.clear();
+        const winner = game.holders.find(holder => holder.id === game.turnInfo.winner);
+        console.log(`And winner is: ${winner?.name}`);
+        return;
+    }
     UILoop(game);
 }
 start();
@@ -49,7 +65,7 @@ async function askForAction(game: Game) {
     const response = await prompts({
         type: "text",
         name: "action",
-        message: "Take your action"
+        message: game.turnInfo.fighting ? "Challenge(ch) or Fold(fd)" : "Take your action",
     });
     log.write(response.action + "\n");
     if (response.action === "quit") {

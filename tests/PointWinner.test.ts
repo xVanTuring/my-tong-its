@@ -1,6 +1,6 @@
-import { CardColor } from "../src/Card";
+import { CardColor, makeCard } from "../src/Card";
 import { displayGame } from "../src/DisplayGame";
-import { calcPointWinner, Game } from "../src/Game";
+import { calcPoint, calcPointWinner, FightChoice, Game } from "../src/Game";
 import { makeHolder } from "../src/Holder";
 import { RevealType } from "../src/RevealGroup";
 
@@ -16,7 +16,10 @@ describe("Point Winner test", () => {
             turnInfo: {
                 fighting: true,
                 picked: false,
-                turn: 30
+                turn: 30,
+                fightChoice: [FightChoice.Unchosen, FightChoice.Unchosen, FightChoice.Unchosen],
+                winner: null,
+                dropped: false,
             }
         };
         {
@@ -105,5 +108,24 @@ describe("Point Winner test", () => {
         console.log(displayGame(game, dealer.id));
         const winner = calcPointWinner(game);
         expect(winner).toBe(player2.id);
+    });
+    it("secret melds points", () => {
+        const holder = makeHolder();
+        holder.cards = [{
+            color: CardColor.club,
+            value: 10
+        }, {
+            color: CardColor.spade,
+            value: 10
+        }, {
+            color: CardColor.heart,
+            value: 10
+        }, {
+            color: CardColor.spade,
+            value: 10
+        }, makeCard(1, CardColor.diamond)];
+        holder.reveals = [];
+        const point = calcPoint(holder)
+        expect(point).toBe(1)
     });
 });

@@ -197,6 +197,6 @@ export function getPairs(_cards: Card[], minLength = 3): Meld[] {
     return pairList;
 }
 
-export function getSecretMeld(_cards: Card[]) {
-    throw Error("Not Implemented");
+export function hasSecretMeld(_cards: Card[]) {
+    return getPairs(_cards, 4).length > 0 || getStraightFlush(_cards, 4).length;
 }

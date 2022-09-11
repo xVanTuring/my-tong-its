@@ -1,5 +1,5 @@
-import { Card, sortCards } from "./Card";
-import { Game, getMe } from "./Game";
+import { Card, hasSecretMeld, sortCards } from "./Card";
+import { calcFightWinner, FightChoice, Game, getMe, startAutoFinalFight } from "./Game";
 import { RevealGroup, RevealType } from "./RevealGroup";
 
 export enum Action {
@@ -8,10 +8,10 @@ export enum Action {
     RevealGroup = "RevealGroup",
     // 丢到已有的组
     Sapaw = "Sapaw",
-    Dump = "Dump"
-    // FOGHT
-    // FOLD,
-    // CHALLENGE
+    Dump = "Dump",
+    Fight = "Fight",
+    Fold = "Fold",
+    Challenge = "Challenge"
 }
 
 export const StartAction = [Action.PickFromCentralStack, Action.PickFromCentralStack,];
@@ -36,7 +36,10 @@ export type ActionWithData = { action: Action.PickFromCentralStack, data: PickAc
     PickDiposedAndRevealActionData |
 { action: Action.Sapaw, data: SapawData; } |
 { action: Action.RevealGroup, data: RevealGroupData; } |
-{ action: Action.Dump, data: DumpActionData; };
+{ action: Action.Dump, data: DumpActionData; } |
+{ action: Action.Fight, data: Record<never, never>; } |
+{ action: Action.Fold, data: Record<never, never>; } |
+{ action: Action.Challenge, data: Record<never, never>; };
 export function getAvaliableActions(game: Game, as: string): ActionWithData[] {
     const me = game.holders.find(h => h.id === as);
     if (me == null) {
@@ -140,16 +143,50 @@ export function calcDisposedPickAction(cards: Card[], disposedCard: Card): { act
     }
     return null;
 }
-export function makeAction(game: Game, actionWithData: ActionWithData, as: string) {
-    function nextTurn(game: Game) {
-        game.turnInfo.turn++;
-        game.turnInfo.picked = false;
-    }
 
+function nextTurn(game: Game) {
+    game.turnInfo.turn++;
+    game.turnInfo.picked = false;
+    game.turnInfo.dropped = false;
+}
+
+export function makeAction(game: Game, actionWithData: ActionWithData) {
     // check user 
-    const me = game.holders.find(holder => holder.id == as);
-    if (me == null) {
-        throw new Error("Can't find holder");
+    const me = getMe(game);
+    //  一回合后可以发起 Fight
+    if (game.turnInfo.turn >= game.holders.length) {
+        if (actionWithData.action === Action.Fight) {
+            if (game.turnInfo.picked || game.turnInfo.dropped || game.turnInfo.fighting) {
+                return;
+            }
+            if (me.reveals.length === 0) { // 没有 reveals 不可以发起 Fight
+                return;
+            }
+            game.turnInfo.fighting = true;
+            game.turnInfo.fightChoice[game.turnInfo.turn % game.holders.length] = FightChoice.Fight;
+            nextTurn(game);
+            afterFightStartAutoTurn(game);
+            return;
+        }
+        if (actionWithData.action === Action.Fold || actionWithData.action === Action.Challenge) {
+            if (!game.turnInfo.fighting)
+                throw new Error("Invalid action: fold or challenge is now allowed now");
+            game.turnInfo.fightChoice[game.turnInfo.turn % game.holders.length] =
+                actionWithData.action === Action.Challenge ? FightChoice.Challenge : FightChoice.Fold;
+
+            const allChosen = game.turnInfo.fightChoice.every((choice) => choice !== FightChoice.Unchosen);
+            if (allChosen) {
+                // settlement
+                calcFightWinner(game);
+            } else {
+                nextTurn(game);
+                afterFightStartAutoTurn(game);
+            }
+            return;
+        }
+    }
+    if (game.turnInfo.fighting) {
+        return;
     }
     // check valid
     if (actionWithData.action === Action.PickFromCentralStack ||
@@ -197,6 +234,7 @@ export function makeAction(game: Game, actionWithData: ActionWithData, as: strin
             me.cards.splice(me.cards.indexOf(card), 1);
         });
         me.reveals.push(actionWithData.data.group);
+        game.turnInfo.dropped = true;
         return;
     }
     if (actionWithData.action === Action.Dump) {
@@ -205,6 +243,9 @@ export function makeAction(game: Game, actionWithData: ActionWithData, as: strin
             game.diposedStack.push(actionWithData.data.card);
         }
         nextTurn(game);
+        if (game.centralStack.length === 0) {
+            startAutoFinalFight(game);
+        }
         return;
     }
     if (actionWithData.action === Action.Sapaw) {
@@ -222,4 +263,21 @@ export function makeAction(game: Game, actionWithData: ActionWithData, as: strin
         });
         sortCards(revealGroup.cards);
     }
+
 }
+function afterFightStartAutoTurn(game: Game) {
+    const me = getMe(game);
+    if (me.reveals.length === 0 && !hasSecretMeld(me.cards)) {
+        game.turnInfo.fightChoice[game.turnInfo.turn % game.holders.length] = FightChoice.Burnt;
+        nextTurn(game);
+        afterFightStartAutoTurn(game);
+        checkAllChosenAndSettle(game);
+    }
+}
+function checkAllChosenAndSettle(game: Game) {
+    const allChosen = game.turnInfo.fightChoice.every((choice) => choice !== FightChoice.Unchosen);
+    if (allChosen) {
+        calcFightWinner(game);
+    }
+}
+

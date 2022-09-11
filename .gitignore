@@ -1,3 +1,5 @@
 node_modules
 lib
 log_steps.txt
+replay.txt
+log_*
