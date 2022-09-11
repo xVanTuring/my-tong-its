@@ -1,5 +1,6 @@
 import { Card, hasSecretMeld, sortCards } from "./Card";
 import { calcFightWinner, FightChoice, Game, getMe, startAutoFinalFight } from "./Game";
+import { calcOptimalMeld } from "./graph/MeldGraph";
 import { RevealGroup, RevealType } from "./RevealGroup";
 
 export enum Action {
@@ -243,6 +244,12 @@ export function makeAction(game: Game, actionWithData: ActionWithData) {
             game.diposedStack.push(actionWithData.data.card);
         }
         nextTurn(game);
+        const meldCards = new Set(calcOptimalMeld(me.cards).flat());
+        if (me.cards.filter((card) => !meldCards.has(card)).length === 0) {
+            // tong-its
+            game.turnInfo.winner = me.id;
+            return;
+        }
         if (game.centralStack.length === 0) {
             startAutoFinalFight(game);
         }

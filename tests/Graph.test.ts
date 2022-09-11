@@ -1,6 +1,6 @@
 import { Card, CardColor, getMeldListPoint, getPairs, getStraightFlush, makeCard, Meld } from "../src/Card";
 import { getCollidedMelds } from "../src/graph/CollideMeld";
-import { calcOptimalMeldGroup } from "../src/graph/MeldGraph";
+import { calcOptimalMeldByGroup } from "../src/graph/MeldGraph";
 
 describe("Graph", () => {
     it("Collided Melds simple scenario: two group collided", () => {
@@ -270,7 +270,7 @@ describe("Card Graph", () => {
                 value: 9
             }
         ]];
-        const bestChoice = calcOptimalMeldGroup(partA, partB);
+        const bestChoice = calcOptimalMeldByGroup(partA, partB);
         expect(getMeldListPoint(bestChoice)).toBe((7 + 8 + 9) * 3);
     });
     it("Test2 Zero Collided", () => {
@@ -302,7 +302,7 @@ describe("Card Graph", () => {
                 value: 9
             }
         ]];
-        const bestChoice = calcOptimalMeldGroup(partA, partB);
+        const bestChoice = calcOptimalMeldByGroup(partA, partB);
         expect(getMeldListPoint(bestChoice)).toBe((7 + 8 + 9) * 2);
     });
     it("Test3 1 collided with 2", () => {
@@ -348,7 +348,7 @@ describe("Card Graph", () => {
                 value: 9
             }
         ]];
-        const bestChoice = calcOptimalMeldGroup(partA, partB);
+        const bestChoice = calcOptimalMeldByGroup(partA, partB);
         const points = getMeldListPoint(bestChoice);
         expect(points).toBe((7 + 8 + 9) * 2);
     });
@@ -395,7 +395,7 @@ describe("Card Graph", () => {
                 value: 9
             }
         ]];
-        const bestChoice = calcOptimalMeldGroup(partA, partB);
+        const bestChoice = calcOptimalMeldByGroup(partA, partB);
         const points = getMeldListPoint(bestChoice);
         expect(points).toBe((7 + 8 + 9) * 2 + 10 * 3);
     });
@@ -437,7 +437,7 @@ describe("Optimal Meld Group", () => {
         it.each(testWithData)('$description', ({ cards, optimalMeld }) => {
             const sfList = getStraightFlush(cards);
             const pairs = getPairs(cards);
-            const meldSelestion = calcOptimalMeldGroup(pairs, sfList);
+            const meldSelestion = calcOptimalMeldByGroup(pairs, sfList);
             expect(optimalMeld.length).toBe(meldSelestion.length);
             expect(getMeldListPoint(meldSelestion)).toBe(getMeldListPoint(optimalMeld));
 

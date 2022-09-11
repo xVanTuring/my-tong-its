@@ -1,6 +1,6 @@
 import { create as createRandom } from "random-seed";
-import { Card, getCardPoint, getMeldPoint, getPairs, getStraightFlush, hasSecretMeld, makeDeckofCard } from "./Card";
-import { calcOptimalMeldGroup } from "./graph/MeldGraph";
+import { Card, getCardPoint, getMeldPoint, hasSecretMeld, makeDeckofCard } from "./Card";
+import { calcOptimalMeld } from "./graph/MeldGraph";
 import { Holder } from "./Holder";
 import { log2File } from "./LogFile";
 export enum FightChoice {
@@ -131,22 +131,16 @@ export function calcPointWinner(game: Game) {
 }
 export function calcPoint(holder: Holder) {
     if (holder.reveals.length === 0) {
-        const secretPairs = getPairs(holder.cards, 4);
-        const secretSFList = getStraightFlush(holder.cards, 4);
-        if (secretPairs.length === 0 && secretSFList.length === 0) {
+        if (!hasSecretMeld(holder.cards)) {
             return getMeldPoint(holder.cards);
         } else {
-            const secretMeldGroup = new Set(calcOptimalMeldGroup(secretPairs, secretSFList).flat());
+            const secretMeldGroup = new Set(calcOptimalMeld(holder.cards, 4).flat());
             const restCards = holder.cards.filter((card) => !secretMeldGroup.has(card));
-            const restPairs = getPairs(restCards);
-            const restSFList = getStraightFlush(restCards);
-            const optimalRestGroup = new Set(calcOptimalMeldGroup(restPairs, restSFList).flat());
+            const optimalRestGroup = new Set(calcOptimalMeld(restCards).flat());
             return getMeldPoint(holder.cards.filter((card) => !secretMeldGroup.has(card) && !optimalRestGroup.has(card)));
         }
     } else {
-        const pairs = getPairs(holder.cards);
-        const sfList = getStraightFlush(holder.cards);
-        const meldCards = new Set(calcOptimalMeldGroup(pairs, sfList).flat());
+        const meldCards = new Set(calcOptimalMeld(holder.cards).flat());
         const point = holder.cards.filter(card => !meldCards.has(card)).reduce((acc, card) => { return acc + getCardPoint(card); }, 0);
         return point;
     }

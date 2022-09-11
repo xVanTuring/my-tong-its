@@ -1,4 +1,4 @@
-import { calcOptimalMeldGroup } from "./graph/MeldGraph";
+import { calcOptimalMeld } from "./graph/MeldGraph";
 
 // 梅花| 黑桃 | 红心| 方块
 export enum CardColor {
@@ -79,10 +79,8 @@ export function displayCardByGroup(cards: Card[]): string[] {
     const line1: string[] = [];
     const line2: string[] = [];
     const lineInd: string[] = [];
-    const pairs = getPairs(cards);
-    const sfList = getStraightFlush(cards);
 
-    const meldList = calcOptimalMeldGroup(pairs, sfList);
+    const meldList = calcOptimalMeld(cards);
     const meldCards = new Set(meldList.flat());
 
     const leftCards = cards.filter((card) => !meldCards.has(card));
@@ -198,5 +196,5 @@ export function getPairs(_cards: Card[], minLength = 3): Meld[] {
 }
 
 export function hasSecretMeld(_cards: Card[]) {
-    return getPairs(_cards, 4).length > 0 || getStraightFlush(_cards, 4).length;
+    return getPairs(_cards, 4).length > 0 || getStraightFlush(_cards, 4).length > 0;
 }

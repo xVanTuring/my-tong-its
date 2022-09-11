@@ -1,8 +1,13 @@
-import { getMeldListPoint, getMeldPoint, Meld } from "../Card";
+import { Card, getMeldListPoint, getMeldPoint, getPairs, getStraightFlush, Meld } from "../Card";
 import { getCollidedMelds } from "./CollideMeld";
 import { findAllCircles, Graph } from "./Graph";
 
-export function calcOptimalMeldGroup(partA: Meld[], partB: Meld[]) {
+export function calcOptimalMeld(cards: Card[], minLength = 3) {
+    const pairs = getPairs(cards, minLength);
+    const sfList = getStraightFlush(cards, minLength);
+    return calcOptimalMeldByGroup(pairs, sfList);
+}
+export function calcOptimalMeldByGroup(partA: Meld[], partB: Meld[]) {
     if (partA.length === 0) {
         return partB;
     }
