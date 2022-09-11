@@ -1,6 +1,6 @@
 
 import { create as createRandom } from "random-seed";
-import { Card, getCardPoint, makeDeckofCard } from "./Card";
+import { Card, getCardPoint, getPairs, getStraightFlush, makeDeckofCard } from "./Card";
 import { Holder } from "./Holder";
 /** 一场对局 */
 export interface Game {
@@ -78,12 +78,21 @@ export function calcPointWinner(game: Game) {
     const holderPoint: { id: string; point: number; }[] = [];
     game.holders.forEach((holder) => {
         if (holder.reveals.length === 0) {
-            // holder is burning 
-            // TODO: 判断秘密明牌
-            holderPoint.push({
-                id: holder.id,
-                point: Infinity
-            });
+            const secretPairs = getPairs(holder.cards, 4);
+            const secretSFList = getStraightFlush(holder.cards, 4);
+            if (secretPairs.length === 0 && secretSFList.length === 0) {
+                holderPoint.push({
+                    id: holder.id,
+                    point: Infinity
+                });
+            } else {
+                const secretCards = new Set([...secretPairs.flat(), ...secretSFList.flat()]);
+                const point = holder.cards.filter((card) => !secretCards.has(card)).reduce((acc, card) => { return acc + getCardPoint(card); }, 0);
+                holderPoint.push({
+                    id: holder.id,
+                    point
+                });
+            }
             return;
         }
         const point = holder.cards.reduce((acc, card) => { return acc + getCardPoint(card); }, 0);
