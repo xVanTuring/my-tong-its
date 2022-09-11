@@ -170,14 +170,14 @@ export function getStraightFlushOneColor(_cards: Card[], minLength = 3): Meld[] 
     const qualified = straightGroups.filter(group => group.length >= minLength);
     return qualified;
 }
-;
+
 export function getStraightFlush(cards: Card[], minLength = 3): Meld[] {
     return CardColorArray.map((color) => {
         return getStraightFlushOneColor(cards.filter((c) => c.color === color), minLength);
     }).flat();
 }
 
-export function getPairs(_cards: Card[], minLength = 3) {
+export function getPairs(_cards: Card[], minLength = 3): Meld[] {
     const cards = [..._cards].sort();
     const dict = new Map<number, Card[]>();
     cards.forEach(card => {

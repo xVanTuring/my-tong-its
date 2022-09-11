@@ -80,7 +80,7 @@ export function getPairsWith(cards: Card[], target: Card): PickDiposedAndRevealA
     }
     return null;
 }
-export function getStraightFlush(cards: Card[], target: Card): PickDiposedAndRevealActionData | null {
+export function getStraightFlushWith(cards: Card[], target: Card): PickDiposedAndRevealActionData | null {
     // 3个以上同花色
     const sameColorCards = cards.filter((card) => card.color === target.color);
     // check size first
@@ -121,7 +121,7 @@ export function calcDisposedPickAction(cards: Card[], disposedCard: Card): { act
     if (pairChoose != null) {
         avaliableChoose.push(pairChoose);
     }
-    let straightFlushChoose = getStraightFlush(cards, disposedCard);
+    let straightFlushChoose = getStraightFlushWith(cards, disposedCard);
     if (straightFlushChoose != null) {
         avaliableChoose.push(straightFlushChoose);
     }
