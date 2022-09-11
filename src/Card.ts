@@ -55,11 +55,6 @@ export function numMapToLocation(num: number): string {
         , '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯'];
     return chars[num] || String(num);
 }
-// export function locationCharToIndex(char: string) {
-//     const chars = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧'
-//         , '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯'];
-//     return Math.max(chars.indexOf(char) - 1, -1);
-// }
 
 export function displayCards(card: Card[]): string[] {
     const line1: string[] = [];

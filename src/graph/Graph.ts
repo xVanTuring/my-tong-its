@@ -34,12 +34,10 @@ function findCircleStartWith(graph: Graph, length: number, path: number[]) {
         for (const i of lastNeighbers) {
             if (length < 3) {
                 if (i > path[0] && (!path.includes(i)) && (graph.neighbors.get(i)!.has(path[0]))) {
-                    console.log([...path, i]);
                     arr.push([...path, i]);
                 }
             } else {
                 if (i > path[1] && (!path.includes(i)) && (graph.neighbors.get(i)!.has(path[0]))) {
-                    console.log([...path, i]);
                     arr.push([...path, i]);
                 }
             }

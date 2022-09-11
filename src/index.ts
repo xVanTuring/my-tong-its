@@ -32,7 +32,6 @@ async function UILoop(game: Game) {
     let action;
     if (action_str == null) {
         action = await askForAction(game);
-        console.log(JSON.stringify(action));
     } else {
         action = parseAction(action_str, game);
     }
@@ -55,8 +54,6 @@ async function askForAction(game: Game) {
     });
     log.write(response.action + "\n");
     if (response.action === "quit") {
-        console.log("All Steps:");
-        console.log(steps.join("\n"));
         log.close();
         process.exit(0);
     }
