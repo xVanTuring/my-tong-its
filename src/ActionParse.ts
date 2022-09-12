@@ -49,6 +49,9 @@ function getActionByShortName(name: string): Action | undefined {
 
 /** pc  */
 function parsePickFromCentralStack(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null || game.centralStack.length === 0) {
+        return null;
+    }
     return {
         action: Action.PickFromCentralStack,
         data: {}
@@ -56,6 +59,9 @@ function parsePickFromCentralStack(actionDescription: string[], game: Game): Act
 }
 /** dp 1 2 3 4 */
 function parsePickFromDiposedStackAndReveal(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     const groupIdx = actionDescription.slice(1).map((n) => Number(n) - 1);
     const me = getMe(game);
     const valid = groupIdx.every((n => {
@@ -94,6 +100,9 @@ function parsePickFromDiposedStackAndReveal(actionDescription: string[], game: G
 }
 /** rv 7 8 9 10 */
 function parseRevealGroup(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     const groupIdx = actionDescription.slice(1).map((n) => Number(n) - 1);
     const valid = groupIdx.every((n => Number.isInteger(n)));
     if (valid == null) {
@@ -127,6 +136,9 @@ function parseRevealGroup(actionDescription: string[], game: Game): ActionWithDa
 }
 /** du idx */
 function parseDump(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     const idx = Number(actionDescription[1]) - 1;
     if (!Number.isInteger(idx) || idx < 0)
         return null;
@@ -147,6 +159,9 @@ function parseDump(actionDescription: string[], game: Game): ActionWithData | nu
  * sa r 1 9
 */
 function parseSapaw(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     if (actionDescription.length < 4)
         return null;
     const targetHolderSide = actionDescription[1];
@@ -191,6 +206,9 @@ function parseSapaw(actionDescription: string[], game: Game): ActionWithData | n
 }
 
 function parseFight(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     if (game.turnInfo.fighting || game.turnInfo.dropped || game.turnInfo.picked) {
         return null;
     }
@@ -209,6 +227,9 @@ function parseFight(actionDescription: string[], game: Game): ActionWithData | n
     };
 }
 function parseFold(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     if (!game.turnInfo.fighting) {
         return null;
     }
@@ -218,6 +239,9 @@ function parseFold(actionDescription: string[], game: Game): ActionWithData | nu
     };
 }
 function parseChallenge(actionDescription: string[], game: Game): ActionWithData | null {
+    if (game.turnInfo.winner != null) {
+        return null;
+    }
     if (!game.turnInfo.fighting) {
         return null;
     }

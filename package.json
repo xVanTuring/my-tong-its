@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start:web": "parcel ./src/web/index.html",
+    "start:web-server": "ts-node-dev --respawn ./src/webserver.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
     "@types/prompts": "^2.0.14",
     "@types/random-seed": "^0.3.3",
     "@types/uuid": "^8.3.4",
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.36.2",
     "@typescript-eslint/parser": "^5.36.2",
     "eslint": "^8.23.0",
@@ -28,6 +31,9 @@
   "dependencies": {
     "prompts": "^2.4.2",
     "random-seed": "^0.3.0",
-    "uuid": "^9.0.0"
+    "ts-node-dev": "^2.0.0",
+    "uuid": "^9.0.0",
+    "vue": "^3.2.39",
+    "ws": "^8.8.1"
   }
 }

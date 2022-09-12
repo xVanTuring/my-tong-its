@@ -40,7 +40,11 @@ function shuffle<T>(arr: T[]) {
 
 export function startOneGame(holders: [dealer: Holder, player: Holder, player: Holder]) {
     const cards = shuffle(makeDeckofCard());
+    holders.forEach(holder => {
+        holder.cards = [];
+    });
     for (let i = 0; i < 12; i++) {
+
         holders.forEach(holder => {
             const card = cards.pop();
             if (card == null) {

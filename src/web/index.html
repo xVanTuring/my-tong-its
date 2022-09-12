@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="blur"></div>
+    <div id="root">
+        <div class="other-info">
+            <div id="leftUser">
+                <div class="name">
+                    ?
+                </div>
+                <div class="card">
+                    ?
+                </div>
+                <div class="meldarea">
+                </div>
+            </div>
+            <div id="center-board" style="display: flex;">
+                <div class="outline" id="central-stack-outline">
+                    <div class="card" id="central-stack">
+                        ?
+                    </div>
+                </div>
+                <div class="outline" id="diposed-stack-outline">
+                    <div class="card" id="diposed-stack">
+                        ?
+                    </div>
+                </div>
+            </div>
+            <div id="rightUser">
+                <div class="name">
+                    ?
+                </div>
+                <div class="card">
+                    ?
+                </div>
+                <div class="meldarea">
+                    <!-- <div class="meld">
+                </div> -->
+                </div>
+            </div>
+        </div>
+        <div id="self-info">
+            <div class="name">?</div>
+            <div class="meldarea" id="self-meld">
+            </div>
+            <div id="card-area">
+            </div>
+            <div class="action-area">
+                <button id="drop"> Drop </button>
+                <button id="dump"> Dump </button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./index.ts" type="module">
+</script>
+<style>
+    .action-area {
+        display: flex;
+        margin-top: 40px;
+        justify-content: space-around;
+    }
+
+    #blur {
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        position: absolute;
+        backdrop-filter: blur(4px);
+        z-index: -10;
+    }
+
+    .name {
+        font-size: 150%;
+        color: white;
+    }
+
+    #root {
+        display: flex;
+        flex-direction: column;
+        height: 50%;
+        justify-content: space-between;
+    }
+
+    #self-info {
+        margin-top: 160px;
+    }
+
+    #card-area {
+        display: flex;
+        margin-top: 88px;
+        justify-content: center;
+    }
+
+    #card-area .card-group {
+        display: flex;
+        margin-right: 48px;
+    }
+
+    #card-area .card {
+        margin-right: -12px;
+        filter: drop-shadow(0px 0px 12px rgba(44, 44, 44, 0.863));
+        line-height: 60px;
+        transition-duration: 50ms;
+    }
+
+
+
+    #card-area .card:hover {
+        margin-top: -20px;
+    }
+
+    #card-area .card.selected {
+        margin-top: -20px;
+        z-index: 1;
+    }
+
+    body {
+        background-color: hsl(193, 15%, 23%);
+        background-image: repeating-linear-gradient(transparent, transparent 50px, rgba(0, 0, 0, .4) 50px, rgba(0, 0, 0, .4) 53px, transparent 53px, transparent 63px, rgba(0, 0, 0, .4) 63px, rgba(0, 0, 0, .4) 66px, transparent 66px, transparent 116px, rgba(0, 0, 0, .5) 116px, rgba(0, 0, 0, .5) 166px, rgba(255, 255, 255, .2) 166px, rgba(255, 255, 255, .2) 169px, rgba(0, 0, 0, .5) 169px, rgba(0, 0, 0, .5) 179px, rgba(255, 255, 255, .2) 179px, rgba(255, 255, 255, .2) 182px, rgba(0, 0, 0, .5) 182px, rgba(0, 0, 0, .5) 232px, transparent 232px),
+            repeating-linear-gradient(270deg, transparent, transparent 50px, rgba(0, 0, 0, .4) 50px, rgba(0, 0, 0, .4) 53px, transparent 53px, transparent 63px, rgba(0, 0, 0, .4) 63px, rgba(0, 0, 0, .4) 66px, transparent 66px, transparent 116px, rgba(0, 0, 0, .5) 116px, rgba(0, 0, 0, .5) 166px, rgba(255, 255, 255, .2) 166px, rgba(255, 255, 255, .2) 169px, rgba(0, 0, 0, .5) 169px, rgba(0, 0, 0, .5) 179px, rgba(255, 255, 255, .2) 179px, rgba(255, 255, 255, .2) 182px, rgba(0, 0, 0, .5) 182px, rgba(0, 0, 0, .5) 232px, transparent 232px),
+            repeating-linear-gradient(125deg, transparent, transparent 2px, rgba(0, 0, 0, .2) 2px, rgba(0, 0, 0, .2) 3px, transparent 3px, transparent 5px, rgba(0, 0, 0, .2) 5px);
+
+
+        height: 100vh;
+        padding: 20px;
+        margin: 0;
+        user-select: none;
+    }
+
+    .card {
+        background:
+            linear-gradient(135deg, #708090 21px, #d9ecff 22px, #d9ecff 24px, transparent 24px, transparent 67px, #d9ecff 67px, #d9ecff 69px, transparent 69px),
+            linear-gradient(225deg, #708090 21px, #d9ecff 22px, #d9ecff 24px, transparent 24px, transparent 67px, #d9ecff 67px, #d9ecff 69px, transparent 69px)0 64px;
+        background-color: #708090;
+        background-size: 64px 128px;
+
+        width: 75px;
+        height: 130px;
+        border-radius: 12px;
+        color: rgb(236, 213, 82);
+        font-size: 40px;
+        text-align: center;
+        line-height: 120px;
+        filter: drop-shadow(0px 0px 12px rgba(0, 0, 0, 0.959));
+    }
+
+    .meldarea {
+        margin-top: 16px;
+    }
+
+    .meldarea .card {
+        display: inline-block;
+        /* padding-left: 8px; */
+        width: 58px;
+        height: 80px;
+        font-size: 30px;
+        line-height: 40px;
+        box-sizing: border-box;
+        color: #fffb00;
+        filter: drop-shadow(0px 0px 5px rgba(41, 41, 41, 0.589));
+        text-align: center;
+    }
+
+    .meld {
+        margin-bottom: 12px;
+    }
+
+    .meld :not(:first-child) {
+        margin-left: -8px;
+        border-radius: 10px;
+    }
+
+    #center-board {
+        width: 280px;
+        margin-top: 18px;
+        display: flex;
+        justify-content: space-evenly;
+        cursor: pointer;
+    }
+
+    .outline {
+        padding: 8px;
+        border: 4px solid rgba(255, 255, 255, 0);
+        border-radius: 12px;
+    }
+    .outline.active{
+        border-color: rgb(51, 192, 70);
+    }
+
+    #center-board #diposed-stack {
+        line-height: 60px;
+        cursor: pointer;
+    }
+
+    .other-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+</style>
+
+</html>
